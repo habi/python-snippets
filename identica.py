@@ -38,8 +38,8 @@ print 'I will load',howmany,'notices from the first notice up to'
 print 'notice ID',ID,'which was posted just now'
 print '---'
 plt.figure()
-counter = 1
-for Notice in range(1,ID,int(ID/howmany)):
+for Notice in range(1,ID,int(round(ID/howmany))+1):
+	counter = Notice / (ID/howmany) +1
 	try:
 		NoticeGetter(Notice)
 	except:
@@ -48,15 +48,14 @@ for Notice in range(1,ID,int(ID/howmany)):
 			Notice += 1
 			NoticeGetter(Notice)
 		except:
-			# Try one more, then give up
+			# Try once more, then give up
 			try:
 				Notice += 1
 				NoticeGetter(Notice)
 			except:
 				print '[' + str(counter) + '/' + str(howmany) + '] ID',ID,'does not exist, sorry!'
-	counter += 1
 
-plt.title('Identica Notice Number vs. Date')
+plt.title('Identica Notice ID vs. Date posted')
 plt.xlabel('Date')
 plt.ylabel('Notice ID')
 plt.show()
