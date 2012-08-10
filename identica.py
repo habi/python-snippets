@@ -6,7 +6,20 @@ from xml.dom.minidom import parseString
 import datetime
 from pylab import *
 
-howmany = 250
+howmany = 200
+
+def NoticeGetter(Notice):
+	# Load defined Notice from identica API, extract its date and plot it
+	file = urllib2.urlopen('http://identi.ca/api/statuses/show/'+str(Notice)+'.xml')
+	data = file.read()
+	file.close()
+	dom = parseString(data)
+	Tag = dom.getElementsByTagName('created_at')[0].toxml()
+	Date=str(Tag.replace('<created_at>','').replace('</created_at>',''))
+	Date = str(Date[:-11])+str(Date[-5:]) # strip the UTC shift, since I just couldn't get the %z parameter to work...
+	Date = datetime.datetime.strptime(Date,'%a %b %d %H:%M:%S %Y')
+	print '[' + str(counter) + '/' + str(howmany) + '] ID',Notice,'was posted on',Date
+	plt.plot_date(Date,Notice)
 
 # Load freshest notice ID
 try:
@@ -21,40 +34,29 @@ except:
 	exit()
 
 # Load 'howmany' notices up to the freshest one and plot their date
-print 'I will load',howmany,'notices from the first to ID',ID
+print 'I will load',howmany,'notices from the first notice up to'
+print 'notice ID',ID,'which was posted just now'
 print '---'
 plt.figure()
 counter = 1
 for Notice in range(1,ID,int(ID/howmany)):
 	try:
-		file = urllib2.urlopen('http://identi.ca/api/statuses/show/'+str(Notice)+'.xml')
-		data = file.read()
-		file.close()
-		dom = parseString(data)
-		Tag = dom.getElementsByTagName('created_at')[0].toxml()
-		Date=str(Tag.replace('<created_at>','').replace('</created_at>',''))
-		Date = str(Date[:-11])+str(Date[-5:]) # strip the UTC shift, since I just couldn't get the %z parameter to work...
-		Date = datetime.datetime.strptime(Date,'%a %b %d %H:%M:%S %Y')
-		print '[' + str(counter) + '/' + str(howmany) + '] ID',Notice,'was posted on',Date
-		plt.plot_date(Date,Notice)
-		plt.title('Identica Notice Number vs. Date')
+		NoticeGetter(Notice)
 	except:
 		# Try the next notice if this one doesnt exist
 		try:
 			Notice += 1
-			file = urllib2.urlopen('http://identi.ca/api/statuses/show/'+str(Notice)+'.xml')
-			data = file.read()
-			file.close()
-			dom = parseString(data)
-			Tag = dom.getElementsByTagName('created_at')[0].toxml()
-			Date=str(Tag.replace('<created_at>','').replace('</created_at>',''))
-			Date = str(Date[:-11])+str(Date[-5:])
-			Date = datetime.datetime.strptime(Date,'%a %b %d %H:%M:%S %Y')
-			print '[' + str(counter) + '/' + str(howmany) + '] ID',Notice,'was posted on',Date
-			plt.plot_date(Date,Notice)
-			plt.title('Identica Notice Number vs. Date')
+			NoticeGetter(Notice)
 		except:
-			print '[' + str(counter) + '/' + str(howmany) + '] ID',ID,'does not exist, sorry!'
+			# Try one more, then give up
+			try:
+				Notice += 1
+				NoticeGetter(Notice)
+			except:
+				print '[' + str(counter) + '/' + str(howmany) + '] ID',ID,'does not exist, sorry!'
 	counter += 1
 
+plt.title('Identica Notice Number vs. Date')
+plt.xlabel('Date')
+plt.ylabel('Notice ID')
 plt.show()
