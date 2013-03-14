@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-				  *Cr*appy *O*pen *S*ource *S*oftware:
-				 *F*eedreader *I*n *R*esponse to *E*van
+                  *Cr*appy *O*pen *S*ource *S*oftware:
+                 *F*eedreader *I*n *R*esponse to *E*van
 
 This aims to be the 'crappiest Open Source RSS client' to have less
 'features than Google Reader' on July 2nd 2013. It's supposed to be
