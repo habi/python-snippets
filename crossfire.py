@@ -50,8 +50,8 @@ if options.Feed is None:
 	sys.exit(1)
 
 starttime = time.time()
-print 'The current time is',time.strftime("%a, %d %b %Y %H:%M:%S +0000",
-										  time.localtime())
+print ('The current time is',
+	   time.strftime("%a, %d %b %Y %H:%M:%S +0000",time.localtime()))
 print
 
 # Copied from http://pythonhosted.org/feedparser/atom-detail.html and
@@ -64,8 +64,8 @@ print '    * was published on "' + f.entries[1].published + '"'
 print '    * at the URL "' + f.entries[1].link + '"'
 
 print
-print 'The current time is',time.strftime("%a, %d %b %Y %H:%M:%S +0000",
-										  time.localtime())
+print ('The current time is', 
+	   time.strftime("%a, %d %b %Y %H:%M:%S +0000",time.localtime()))
 print ('It took me ' + str(round(time.time() - starttime,3)) + 
 	   ' seconds to do your bidding.')
 print 
