@@ -53,7 +53,7 @@ starttime = time.time()
 eol = time.mktime((2013, 7, 1, 0, 0, 0, 0, 0, -1))
 
 if starttime > eol:
-        print 'Sorry, this product has reached its end of life.'
+	print 'Sorry, this product has reached its end of life.'
 	sys.exit(1)
         
 print ('The current time is',
