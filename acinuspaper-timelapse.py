@@ -7,7 +7,7 @@ import os
 import subprocess
 
 # Setup
-SaveToDirectory = 'c:/tmp'
+SaveToDirectory = os.path.join('c:','Users','haberthu','Desktop','Dropbox','Work','AcinusPaperTimeLapse')
 
 # Get SVN info from remote repository
 (Output, Error) = subprocess.Popen('svn info http://code.ana.unibe.ch/svn/AcinusPaper',
@@ -21,8 +21,7 @@ MaxRevision = int(Output[Output.find('Revision')+len('Revision: '):
                          Output.find('Revision')+len('Revision: ')+2])
 
 # Check out each revision into its own directory
-# for Revision in range(1,MaxRevision+1):  # go from 1 to MaxRevision, not between
-for Revision in range(1,30):
+for Revision in range(1,MaxRevision+1):  # go from 1 to MaxRevision, not between
     SavePath = os.path.join(SaveToDirectory,'PaperRevision' + "%02d" % Revision)
     print 'Checking out revision', Revision, 'of the acinus manuscript to',\
         SavePath
@@ -36,7 +35,7 @@ for Revision in range(1,30):
             exit()
     # Redirect subprocess output to Nirvana: http://stackoverflow.com/a/1244757
     nirvana = open("NUL","w")
-    subprocess.Popen('svn checkout -r ' + str(Revision) + 
+    subprocess.call('svn checkout -r ' + str(Revision) + 
         ' http://code.ana.unibe.ch/svn/AcinusPaper ' + SavePath, 
         stdout=nirvana, stderr = nirvana, shell=True)
     #~ subprocess.Popen('latexmk ' + str(os.path.join(SavePath, 'acinus.tex')),
@@ -44,4 +43,4 @@ for Revision in range(1,30):
     # Nirvana was probably a bad choice of variable name, since the Nirvana
     # cannot be closed
     nirvana.close()
-
+    os.rename(os.path.join(SavePath, 'acinus.tex'),os.path.join(SavePath, 'acinus_rev' + "%02d" % Revision + '.tex'))    
