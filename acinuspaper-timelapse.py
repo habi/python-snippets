@@ -6,6 +6,7 @@ I can then generate some kind of "timelapse" of the evolution of the paper.
 import os
 import subprocess
 import shutil
+import glob
 
 # Setup
 SaveToDirectory = os.path.join('c:', 'Users', 'haberthu', 'Desktop',
@@ -26,10 +27,12 @@ SaveToDirectory = os.path.join('c:', 'Users', 'haberthu', 'Desktop',
 MaxRevision = int(Output[Output.find('Revision') + len('Revision: '):
                          Output.find('Revision') + len('Revision: ') + 2])
 
+silent = True
 # Check out each revision into its own directory, remove unnecessary files
-for Revision in range(1, MaxRevision + 1):  # go from 1 to MaxRev, not between
+for Revision in range(64, MaxRevision + 1):  # go from 1 to MaxRev, not between
     SavePath = os.path.join(SaveToDirectory,
                             'PaperRevision' + "%02d" % Revision)
+    print 20* '_'
     print 'Checking out revision', Revision, 'of the acinus manuscript to',\
         SavePath
     # See if we can make a directory. If not, it might already exist. If not,
@@ -41,20 +44,25 @@ for Revision in range(1, MaxRevision + 1):  # go from 1 to MaxRev, not between
             print 'I do not know what is wrong'
             exit()
     # Redirect subprocess output to Nirvana: http://stackoverflow.com/a/1244757
-    nirvana = open("NUL", "w")
-    subprocess.call('svn checkout -r ' + str(Revision) +
-        ' http://code.ana.unibe.ch/svn/AcinusPaper ' + SavePath,
-        stdout=nirvana, stderr=nirvana, shell=True)
-    #~ subprocess.Popen('latexmk ' + str(os.path.join(SavePath, 'acinus.tex')),
-        #~ stdout=nowhere, stderr = nowhere)
-    # Nirvana was probably a bad choice of variable name, since the Nirvana
-    # cannot be closed
-    nirvana.close()
+    if silent:
+        nirvana = open("NUL", "w")
+        subprocess.call('svn checkout -r ' + str(Revision) +
+            ' http://code.ana.unibe.ch/svn/AcinusPaper ' + SavePath,
+            stdout=nirvana, stderr=nirvana, shell=True)
+        nirvana.close()
+    else:
+        subprocess.call('svn checkout -r ' + str(Revision) +
+            ' http://code.ana.unibe.ch/svn/AcinusPaper ' + SavePath,
+            shell=True)
     os.rename(os.path.join(SavePath, 'acinus.tex'),
               os.path.join(SavePath, 'acinus_rev' + "%02d" % Revision +
                            '.tex'))
     # remove SVN directory, we don't need that
-    shutil.rmtree(os.path.join(SavePath, '.svn'))
+    shutil.rmtree(os.path.join(SavePath, '.svn'), ignore_errors=True)
     # remove movies for larger revisions, we don't need them
     if Revision > 57:
-        shutil.rmtree(os.path.join(SavePath, 'movies'))
+        shutil.rmtree(os.path.join(SavePath, 'movies'), ignore_errors=True)
+    # remove Excel files for larger revisions, we don't need them
+    if Revision > 58:
+        for item in glob.glob(os.path.join(SavePath, '*.xls*')):
+            os.remove(item)
