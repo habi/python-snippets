@@ -29,7 +29,7 @@ MaxRevision = int(Output[Output.find('Revision') + len('Revision: '):
 
 silent = True
 # Check out each revision into its own directory, remove unnecessary files
-for Revision in range(64, MaxRevision + 1):  # go from 1 to MaxRev, not between
+for Revision in range(83, MaxRevision + 1):  # go from 1 to MaxRev, not between
     SavePath = os.path.join(SaveToDirectory,
                             'PaperRevision' + "%02d" % Revision)
     print 20* '_'
