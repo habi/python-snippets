@@ -1,6 +1,7 @@
 '''
 Script to check out each and every revision of the Acinus-Paper repository, so
-I can then generate some kind of "timelapse" of the evolution of the paper.
+I can then generate some kind of "timelapse" of the evolution of the paper, 
+something like http://flowingdata.com/2012/11/30/time-lapse-writing/
 '''
 
 import os
@@ -29,7 +30,7 @@ MaxRevision = int(Output[Output.find('Revision') + len('Revision: '):
 
 silent = True
 # Check out each revision into its own directory, remove unnecessary files
-for Revision in range(83, MaxRevision + 1):  # go from 1 to MaxRev, not between
+for Revision in range(85, MaxRevision + 1):  # go from 1 to MaxRev, not between
     SavePath = os.path.join(SaveToDirectory,
                             'PaperRevision' + "%02d" % Revision)
     print 20* '_'
