@@ -64,5 +64,5 @@ if montage:
         # resize that humongous image to 4K resolution
         subprocess.call('convert mosaic-' + str("%02d" % Revision) + '.jpg ' +\
                         '-resize 4096 -background white -gravity north ' +\
-                        '-extent 4096x4096 frame-' + str(Revision) + '.jpg',
-                        shell=True)
+                        '-extent 4096x4096 frame-' + str("%02d" % Revision) +\
+                        '.jpg', shell=True)
