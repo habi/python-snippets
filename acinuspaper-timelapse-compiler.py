@@ -1,5 +1,6 @@
 '''
-Script to 'latexmk' every revision of the acinus-paper.
+Script to 'latexmk' every revision of the acinus-paper and to compile the PDFs
+into a mosaic, so we can make a timelapse movie of the paper.
 '''
 
 import os
@@ -51,18 +52,20 @@ montage = True
 # > montage -density 300 album.pdf -mode Concatenate -tile 2x1 -quality 80
 # >-resize 800 two_page.jpg
 if montage:
-    for Revision in range(1, MaxRevision + 1):  # from 1 to MaxRev, not between
+    for Revision in range(1, 5 + 1):  # from 1 to MaxRev, not between
         Directory = os.path.join(SaveToDirectory,
                                 'PaperRevision' + "%02d" % Revision)
         print 'Compiling all pages of Revision', Revision, 'into a mosaic'
         os.chdir(Directory)
         # concatenate all pages into one humongous image
         subprocess.call('montage -density 300 *.pdf -mode Concatenate -tile' +\
-                        ' 7x6 mosaic-' + str("%02d" % Revision) + '.jpg',
+                        ' 7x6 mosaic-' + str("%02d" % Revision) + '.png',
                         shell=True)
         print 'Resizing mosaic to 4k resolution'
         # resize that humongous image to 4K resolution
         subprocess.call('convert mosaic-' + str("%02d" % Revision) + '.jpg ' +\
                         '-resize 4096 -background white -gravity north ' +\
-                        '-extent 4096x4096 frame-' + str("%02d" % Revision) +\
-                        '.jpg', shell=True)
+                        '-extent 4096x4096 -gravity south -stroke \"#000C\" ' +\
+                        '-strokewidth 5 -pointsize 144 -annotate 0 \"REV 123\" '+\
+                        '-stroke none -fill white -annotate 0 \"REV 123\" ' +\
+                        'frame-' + str("%02d" % Revision) + '.png', shell=True)
