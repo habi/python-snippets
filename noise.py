@@ -1,5 +1,5 @@
 '''
-Snippe to show how to add noise to data
+Snippet to show how to add noise to data
 '''
 from pylab import *
 import numpy as np
