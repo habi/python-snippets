@@ -1,4 +1,6 @@
-# Loads notices from identi.ca via the API, saves the dates of the notices and plots them
+"""
+Loads notices from identi.ca via the API, saves the dates of the notices and plots them
+"""
 
 import urllib2
 # The XML-wrangling code is based on http://is.gd/IQUOew
