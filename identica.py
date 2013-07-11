@@ -6,7 +6,7 @@ from xml.dom.minidom import parseString
 import datetime
 from pylab import *
 
-howmany = 200
+howmany = 50
 
 def NoticeGetter(Notice):
 	# Load defined Notice from identica API, extract its date and plot it
