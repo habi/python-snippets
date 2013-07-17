@@ -11,25 +11,35 @@ latexmk = True
 montage = False
 
 # Setup
-SaveToDirectory = os.path.join('c:\\', 'Users', 'haberthu', 'Desktop',
-    'Dropbox', 'Work', 'AcinusPaperTimeLapse')
+if os.name == 'posix':
+	DropBoxDir = os.path.join('/Users','habi','Dropbox')
+else:
+	DropBoxDir = os.path.join('c:\\', 'Users', 'haberthu', 'Desktop',
+    'Dropbox')
+SaveToDirectory = os.path.join(DropBoxDir, 'Work', 'AcinusPaperTimeLapse')
 
-# Get SVN info from remote repository
-(Output, Error) = subprocess.Popen(('svn', \
-                                    'info',\
-                                    'http://code.ana.unibe.ch/svn/' + \
-                                    'AcinusPaper'),
-                                    stdout=subprocess.PIPE,
-                                    shell=True).communicate()
+if os.name == 'posix':
+	# Fake revision number if running at home, sice we cannot easily connect
+	# to the SVN server of the university...
+	MaxRevision= 94
+else:
+	# Get SVN info from remote repository
+	(Output, Error) = subprocess.Popen(('svn', \
+    	                                'info',\
+        	                            'http://code.ana.unibe.ch/svn/' + \
+            	                        'AcinusPaper'),
+                	                    stdout=subprocess.PIPE,
+                    	                shell=True).communicate()
 
-# Do some string manipulation to find the highest revision number
-# The 'Output' above contains 'Revision: $RevisionNumber', thus find the first
-# occurrence of 'Revision' in Output, and use the two digits that come after it
-# If we have more than 99 revisions 'skip=2' will need to be changed to
-# 'skip=3'. And probably also change the string formatting for the Directories
-skip = 2
-MaxRevision = int(Output[Output.find('Revision') + len('Revision: '):
-                         Output.find('Revision') + len('Revision: ') + skip])
+	# Do some string manipulation to find the highest revision number
+	# The 'Output' above contains 'Revision: $RevisionNumber', thus find the
+	# first occurrence of 'Revision' in Output, and use the two digits that come 	# after it. If we have more than 99 revisions 'skip=2' will need to be
+	# changed to 'skip=3'. And probably also change the string formatting for
+	# the Directories
+	skip = 2
+	MaxRevision = int(Output[Output.find('Revision') + len('Revision: '):
+    	                     Output.find('Revision') + len('Revision: ') +
+							 skip])
 
 PageNumber = []
 # Go into each folder and 'latexmk' this thing
@@ -48,7 +58,7 @@ if latexmk:
                         #~ shell=True)
         nirvana.close()
         # Count Pages of the resulting PDF
-        process = subprocess.Popen('identify -format %n *.pdf',
+        process = subprocess.Popen(['identify','-format','%n','*.pdf'],
                                    stdout=subprocess.PIPE)
         NumberOfPages, Error = process.communicate()
         PageNumber.append(int(NumberOfPages))
