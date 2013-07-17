@@ -7,6 +7,9 @@ import os
 import subprocess
 import glob
 
+latexmk = True
+montage = False
+
 # Setup
 SaveToDirectory = os.path.join('c:\\', 'Users', 'haberthu', 'Desktop',
     'Dropbox', 'Work', 'AcinusPaperTimeLapse')
@@ -28,7 +31,7 @@ skip = 2
 MaxRevision = int(Output[Output.find('Revision') + len('Revision: '):
                          Output.find('Revision') + len('Revision: ') + skip])
 
-latexmk = False
+PageNumber = []
 # Go into each folder and 'latexmk' this thing
 if latexmk:
     for Revision in range(1, MaxRevision + 1):  # from 1 to MaxRev, not between
@@ -44,15 +47,22 @@ if latexmk:
         subprocess.call('latexmk -c *.tex', stdout=nirvana, stderr=nirvana,
                         shell=True)
         nirvana.close()
+        # Count Pages of the resulting PDF
+        process = subprocess.Popen('identify -format %n *.pdf',
+                                   stdout=subprocess.PIPE)
+        NumberOfPages, Error = process.communicate()
+        PageNumber.append(NumberOfPages)
+        print 'The PDF of revision', Revision, 'contains', NumberOfPages[:-2],\
+         'pages'
+    print 'The maximum page number found is', max(PageNumber)
 
-montage = True
 # Go into each folder and make a montage of the PDF
 # Commandline call based on one of wiki pages http://is.gd/rpQHVk and help from
 # http://is.gd/ArtPrA
 # > montage -density 300 album.pdf -mode Concatenate -tile 2x1 -quality 80
 # >-resize 800 two_page.jpg
 if montage:
-    for Revision in range(1, 5 + 1):  # from 1 to MaxRev, not between
+    for Revision in range(1, MaxRevision + 1):  # from 1 to MaxRev, not between
         Directory = os.path.join(SaveToDirectory,
                                 'PaperRevision' + "%02d" % Revision)
         print 'Compiling all pages of Revision', Revision, 'into a mosaic'
@@ -63,9 +73,13 @@ if montage:
                         shell=True)
         print 'Resizing mosaic to 4k resolution'
         # resize that humongous image to 4K resolution
-        subprocess.call('convert mosaic-' + str("%02d" % Revision) + '.jpg ' +\
+        os.chdir(Directory)
+        print os.getcwd()
+        subprocess.call('convert mosaic-' + str("%02d" % Revision) + '.png ' +\
                         '-resize 4096 -background white -gravity north ' +\
-                        '-extent 4096x4096 -gravity south -stroke \"#000C\" ' +\
-                        '-strokewidth 5 -pointsize 144 -annotate 0 \"REV 123\" '+\
-                        '-stroke none -fill white -annotate 0 \"REV 123\" ' +\
-                        'frame-' + str("%02d" % Revision) + '.png', shell=True)
+                        '-extent 4096x4096 -gravity south -stroke \"#000C\"' +\
+                        ' -strokewidth 15 -pointsize 144 -annotate 0 ' +\
+                        '\"Revision ' + str("%02d" % Revision) + '\" ' +\
+                        '-stroke none -fill white -annotate 0 \"Revision ' +\
+                        str("%02d" % Revision) + '\" frame-' + \
+                        str("%02d" % Revision) + '.png', shell=True)
