@@ -44,15 +44,15 @@ if latexmk:
         subprocess.call('latexmk -pdf -silent *.tex', stdout=nirvana,
                         stderr=nirvana, shell=True)
         # cleanup after compilation
-        subprocess.call('latexmk -c *.tex', stdout=nirvana, stderr=nirvana,
-                        shell=True)
+        #~ subprocess.call('latexmk -c *.tex', stdout=nirvana, stderr=nirvana,
+                        #~ shell=True)
         nirvana.close()
         # Count Pages of the resulting PDF
         process = subprocess.Popen('identify -format %n *.pdf',
                                    stdout=subprocess.PIPE)
         NumberOfPages, Error = process.communicate()
-        PageNumber.append(NumberOfPages)
-        print 'The PDF of revision', Revision, 'contains', NumberOfPages[:-2],\
+        PageNumber.append(int(NumberOfPages))
+        print 'The PDF of revision', Revision, 'contains', int(NumberOfPages),\
          'pages'
     print 'The maximum page number found is', max(PageNumber)
 
