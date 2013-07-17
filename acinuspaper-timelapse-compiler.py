@@ -8,7 +8,7 @@ import subprocess
 import glob
 
 latexmk = True
-montage = False
+montage = True
 
 # Setup
 if os.name == 'posix':
@@ -79,7 +79,7 @@ if montage:
         os.chdir(Directory)
         # concatenate all pages into one humongous image
         subprocess.call('montage -density 300 *.pdf -mode Concatenate -tile' +\
-                        ' 7x6 mosaic-' + str("%02d" % Revision) + '.png',
+                        ' 8x4 mosaic-' + str("%02d" % Revision) + '.png',
                         shell=True)
         print 'Resizing mosaic to 4k resolution'
         # resize that humongous image to 4K resolution
@@ -87,7 +87,7 @@ if montage:
         print os.getcwd()
         subprocess.call('convert mosaic-' + str("%02d" % Revision) + '.png ' +\
                         '-resize 4096 -background white -gravity north ' +\
-                        '-extent 4096x4096 -gravity south -stroke \"#000C\"' +\
+                        '-extent 4096x2048 -gravity south -stroke \"#000C\"' +\
                         ' -strokewidth 15 -pointsize 144 -annotate 0 ' +\
                         '\"Revision ' + str("%02d" % Revision) + '\" ' +\
                         '-stroke none -fill white -annotate 0 \"Revision ' +\
