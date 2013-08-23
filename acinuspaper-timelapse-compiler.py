@@ -86,7 +86,7 @@ if montage:
         os.chdir(Directory)
         subprocess.call('convert mosaic-' + str("%02d" % Revision) + '.png ' +\
                         '-resize 4096 -background white -gravity north ' +\
-                        '-extent 4096x2048 -gravity south -stroke \"#000C\"' +\
+                        '-extent 4096x2896 -gravity south -stroke \"#000C\"' +\
                         ' -strokewidth 15 -pointsize 144 -annotate 0 ' +\
                         '\"Revision ' + str("%02d" % Revision) + '\" ' +\
                         '-stroke none -fill white -annotate 0 \"Revision ' +\
