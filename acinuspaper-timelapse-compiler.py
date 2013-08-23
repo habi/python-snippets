@@ -93,13 +93,16 @@ if montage:
                         str("%02d" % Revision) + '\" frame-' + \
                         str("%02d" % Revision) + '.png', shell=True)
 
+# Cleanup
 # delete all the unnecessary stuff and move the images to their own directories
 os.chdir(SaveToDirectory)
-# remove all the unnecessary LaTeX-stuff
-subprocess.call('for i in `ls -d Pap*`; do rm $i/NUL; rm $i/*.b*;rm $i/*.lo*;rm $i/*.aux;rm $i/*.f*;rm $i/*.out;rm $i/*.tdo;rm$i/*.toc;done',shell=True)
-# create directories for timelapse-frames if necessary
-if not os.path.isdir('frame'):
-	os.mkdir('frame')
-	os.mkdir('mosaic')
-# remove all the unnecessary LaTeX-stuff
-subprocess.call('for i in `ls -d Pap*`; do mv $i/fr*.png frame;mv $i/mo*.png mosaic;done',shell=True)
+if latexmk:
+	# remove all the unnecessary LaTeX-stuff
+	subprocess.call('for i in `ls -d Pap*`; do rm $i/NUL; rm $i/*.b*;rm $i/*.lo*;rm $i/*.aux;rm $i/*.f*;rm $i/*.out;rm $i/*.tdo;rm$i/*.toc;done',shell=True)
+if montage:
+	# create directories for timelapse-frames if necessary
+	if not os.path.isdir('frame'):
+		os.mkdir('frame')
+		os.mkdir('mosaic')
+	# move all the frames to their respective directories
+	subprocess.call('for i in `ls -d Pap*`; do mv $i/fr*.png frame;mv $i/mo*.png mosaic;done',shell=True)
