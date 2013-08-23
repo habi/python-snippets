@@ -19,8 +19,8 @@ else:
 SaveToDirectory = os.path.join(DropBoxDir, 'Work', 'AcinusPaperTimeLapse')
 
 if os.name == 'posix':
-	# Fake revision number if running at home, sice we cannot easily connect
-	# to the SVN server of the university...
+	# Fake revision number if running on the private laptop or at PSI, sice we
+	# then cannot easily connect to the SVN server at ana.unibe.ch...
 	MaxRevision= 94
 else:
 	# Get SVN info from remote repository
@@ -30,10 +30,10 @@ else:
             	                        'AcinusPaper'),
                 	                    stdout=subprocess.PIPE,
                     	                shell=True).communicate()
-
 	# Do some string manipulation to find the highest revision number
 	# The 'Output' above contains 'Revision: $RevisionNumber', thus find the
-	# first occurrence of 'Revision' in Output, and use the two digits that come 	# after it. If we have more than 99 revisions 'skip=2' will need to be
+	# first occurrence of 'Revision' in Output, and use the two digits that come
+	# after it. If we have more than 99 revisions 'skip=2' will need to be
 	# changed to 'skip=3'. And probably also change the string formatting for
 	# the Directories
 	skip = 2
@@ -54,8 +54,8 @@ if latexmk:
         subprocess.call('latexmk -pdf -silent *.tex', stdout=nirvana,
                         stderr=nirvana, shell=True)
         # cleanup after compilation
-        #~ subprocess.call('latexmk -c *.tex', stdout=nirvana, stderr=nirvana,
-                        #~ shell=True)
+        subprocess.call('latexmk -c *.tex', stdout=nirvana, stderr=nirvana,
+                        shell=True)
         nirvana.close()
         # Count Pages of the resulting PDF
         process = subprocess.Popen(['identify','-format','%n','*.pdf'],
@@ -78,13 +78,12 @@ if montage:
         print 'Compiling all pages of Revision', Revision, 'into a mosaic'
         os.chdir(Directory)
         # concatenate all pages into one humongous image
-        subprocess.call('montage -density 300 *.pdf -mode Concatenate -tile' +\
+        subprocess.call('montage -density 150 *.pdf -mode Concatenate -tile' +\
                         ' 8x4 mosaic-' + str("%02d" % Revision) + '.png',
                         shell=True)
         print 'Resizing mosaic to 4k resolution'
         # resize that humongous image to 4K resolution
         os.chdir(Directory)
-        print os.getcwd()
         subprocess.call('convert mosaic-' + str("%02d" % Revision) + '.png ' +\
                         '-resize 4096 -background white -gravity north ' +\
                         '-extent 4096x2048 -gravity south -stroke \"#000C\"' +\
@@ -93,3 +92,14 @@ if montage:
                         '-stroke none -fill white -annotate 0 \"Revision ' +\
                         str("%02d" % Revision) + '\" frame-' + \
                         str("%02d" % Revision) + '.png', shell=True)
+
+# delete all the unnecessary stuff and move the images to their own directories
+os.chdir(SaveToDirectory)
+# remove all the unnecessary LaTeX-stuff
+subprocess.call('for i in `ls -d Pap*`; do rm $i/NUL; rm $i/*.b*;rm $i/*.lo*;rm $i/*.aux;rm $i/*.f*;rm $i/*.out;rm $i/*.tdo;rm$i/*.toc;done',shell=True)
+# create directories for timelapse-frames if necessary
+if not os.path.isdir('frame'):
+	os.mkdir('frame')
+	os.mkdir('mosaic')
+# remove all the unnecessary LaTeX-stuff
+subprocess.call('for i in `ls -d Pap*`; do mv $i/fr*.png frame;mv $i/mo*.png mosaic;done',shell=True)
