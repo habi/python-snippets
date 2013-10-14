@@ -58,34 +58,39 @@ def smooth(x,window_len=11,window='hanning'):
 from numpy import *
 from pylab import *
 
-t=linspace(-4,4,100)
-x=sin(t)
-xn=x+randn(len(t))*0.1
-y=smooth(x)
+def smooth_demo():
 
-ws=31
+    t=linspace(-4,4,100)
+    x=sin(t)
+    xn=x+randn(len(t))*0.1
+    y=smooth(x)
 
-subplot(211)
-plot(ones(ws))
+    ws=31
 
-windows=['flat', 'hanning', 'hamming', 'bartlett', 'blackman']
+    subplot(211)
+    plot(ones(ws))
 
-hold(True)
-for w in windows[1:]:
-    eval('plot('+w+'(ws) )')
+    windows=['flat', 'hanning', 'hamming', 'bartlett', 'blackman']
 
-axis([0,30,0,1.1])
+    hold(True)
+    for w in windows[1:]:
+        eval('plot('+w+'(ws) )')
 
-legend(windows)
-title("The smoothing windows")
-subplot(212)
-plot(x)
-plot(xn)
-for w in windows:
-    plot(smooth(xn,10,w))
-l=['original signal', 'signal with noise']
-l.extend(windows)
+    axis([0,30,0,1.1])
 
-legend(l)
-title("Smoothing a noisy signal")
-show()
+    legend(windows)
+    title("The smoothing windows")
+    subplot(212)
+    plot(x)
+    plot(xn)
+    for w in windows:
+        plot(smooth(xn,10,w))
+    l=['original signal', 'signal with noise']
+    l.extend(windows)
+
+    legend(l)
+    title("Smoothing a noisy signal")
+    show()
+
+if __name__=='__main__':
+    smooth_demo()
