@@ -1,56 +1,119 @@
-#! /usr/bin/env python
-
-"""
-This is the code I used to make the plots in this (german) blog post:
-http://is.gd/dtbS9n
-
-We discussed that the comment numbers in blogs are declining. The Python script
-below reads a .txt file containing 'year' 'count' 'average' [1] and plots the
-normalized numbers so see them visually. The optparse module is used to load
-different files from different users/blogs.
-
-[1]: generated with this SQL query
----
-SELECT YEAR( post_date ) , COUNT( ID ) , AVG( comment_count )
-FROM `wp_posts`
-WHERE post_status = 'publish'
-AND comment_status = 'open'
-GROUP BY YEAR( post_date )
----
-"""
+'''
+Plotting comment number from a WordPress MySQL database
+'''
 
 import optparse
-from pylab import *
+import random
+import string
+import sys
+try:
+    import mysql.connector
+except ImportError:
+    print 'mysql.connector not found'
+    sys.exit('try installing it with "pip install mysql-connector-python"')
+try:
+    import matplotlib.pyplot as plt
+    plot = True
+except ImportError:
+    print 'matplotlib not found, I cannot plot'
+    print 'If you want to see the plot, install it with help from',\
+        'http://matplotlib.org/users/installing.html'
+    plot = False
+try:
+    import names
+    name = '_'.join(names.get_full_name().split(' '))
+except ImportError:
+    name = 'John_Doe'
 
 # Use Pythons Optionparser to define and read the options, and also
 # give some help to the user
 parser = optparse.OptionParser()
 usage = "usage: %prog [options] arg"
-parser.add_option('-n', dest='Name', metavar='Fridolin')
+parser.add_option('-s', '--Server', dest='Server', metavar='example.com',
+                  help='Server to access the database from.')
+parser.add_option('-d', '--Database', dest='Database', metavar='databank',
+                  help='Database from which you would like to grab the data')
+parser.add_option('-u', '--User', dest='User', metavar='Fridolin',
+                  help='Username for the database above')
+parser.add_option('-p', '--Password', dest='Password', metavar='UhuereGheim',
+                  help='Password for the user of the database')
+parser.add_option('-n', '--Normalized', dest='Normalized',
+                  default=True, action='store_true',
+                  help='Plot the normalized comments, e.g. relative to the '
+                       'maximal amount of comments per post. (default: '
+                       '%default)')
+parser.add_option("-r", '--Real', dest='Normalized',
+                  action="store_false",
+                  help='Plot the comments per post. (default is "-n")')
 (options, args) = parser.parse_args()
 
-# show the help if no parameters are given
-if options.Name==None:
-	parser.print_help()
-	print ''
-	print 'Example:'
-	print 'The command reads the comment from "comments_sepp.txt"'
-	print 'and plots them nicely.'
-	print ''
-	print 'comments.py -n sepp'
-	print ''
-	sys.exit(1)
-print ''
+# show the help necessary parameters are missing
+if not (options.Server and options.Database and options.User and
+        options.Password):
+    print 'At least one of the necessary parameters (Server, Database, User',\
+        'or Password) is missing!'
+    parser.print_help()
+    password = ''.join(random.choice(string.lowercase) for i in range(8))
+    print
+    print 'Example:'
+    print 'The command gets the comments'
+    print '   * out of the database "awesomebase" on server "example.com"'
+    print '   * for user "' + name + '"'
+    print '   * with the password "' + password + '"'
+    print 'and plots them with the real numbers (if matplotlib is available',\
+        'otherwise it just gives out the numbers.'
+    print
+    print 'comments.py -s example.com -d awesomebase -u', name, '-p',\
+        password, '-r'
+    print
+    sys.exit('Plese try again')
 
-Data = genfromtxt('comments_' + str(options.Name) + '.txt',skip_header=True)
+databaseconnection = mysql.connector.connect(host=options.Server,
+                                             database=options.Database,
+                                             user=options.User,
+                                             password=options.Password)
+cursor = databaseconnection.cursor()
 
-MaxAverage = 0
-for line in Data[:,2]:
-	MaxAverage = max(MaxAverage,line)
+query = ' '.join(["SELECT YEAR(post_date) , COUNT(ID) , AVG(comment_count)",
+                  "FROM `wp_posts`",
+                  "WHERE post_status = 'publish'",
+                  "GROUP BY YEAR( post_date )"])
 
-ax = plt.subplot(111)
-ax.plot(Data[:,0],Data[:,2]/MaxAverage)
-ax.axis([2003,2012,0,1])
-ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
-title('Normalized comments for ' + str(options.Name))
-savefig(str(options.Name) + '.png')
+cursor.execute(query)
+Years = [int(post_date) for (post_date, ID, comment_count) in cursor]
+
+cursor.execute(query)
+Posts = [int(ID) for (post_date, ID, comment_count) in cursor]
+
+cursor.execute(query)
+CommentsPerPost = [float(comment_count) for
+                   (post_date, ID, comment_count) in cursor]
+NormalizedAverage = [x / max(CommentsPerPost) for x in CommentsPerPost]
+
+cursor.close()
+databaseconnection.close()
+
+print
+print 'Year | Posts | Cmnts | Cmnts, normalized'
+print 40 * '-'
+for y in Years:
+    print y, '|', str(Posts[Years.index(y)]).rjust(5), '|',\
+        str(round(CommentsPerPost[Years.index(y)], 2)).ljust(5), '|',\
+        str(round(NormalizedAverage[Years.index(y)], 3)).ljust(8)
+
+if plot:
+    plt.figure(figsize=(16, 9))
+    plt.subplot(121)
+    plt.plot(Years, Posts, marker='o')
+    plt.xlabel('Year')
+    plt.title('Posts per year')
+    plt.subplot(122)
+    if options.Normalized:
+        plt.plot(Years, NormalizedAverage, marker='o')
+        plt.title('Normalized comments per post')
+    else:
+        plt.plot(Years, CommentsPerPost, marker='o')
+        plt.title('Comments per post')
+    plt.xlabel('Year')
+    plt.savefig(str(options.User) + '.png')
+    plt.show()
