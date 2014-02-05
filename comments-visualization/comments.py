@@ -2,10 +2,12 @@
 Plotting comment number from a WordPress MySQL database
 '''
 
+from __future__ import division
 import optparse
 import random
 import string
 import sys
+
 try:
     import mysql.connector
 except ImportError:
@@ -84,11 +86,12 @@ Years = [int(post_date) for (post_date, ID, comment_count) in cursor]
 
 cursor.execute(query)
 Posts = [int(ID) for (post_date, ID, comment_count) in cursor]
+NormalizedPosts = [x / max(Posts) for x in Posts]
 
 cursor.execute(query)
 CommentsPerPost = [float(comment_count) for
                    (post_date, ID, comment_count) in cursor]
-NormalizedAverage = [x / max(CommentsPerPost) for x in CommentsPerPost]
+NormalizedComments = [x / max(CommentsPerPost) for x in CommentsPerPost]
 
 cursor.close()
 databaseconnection.close()
@@ -99,21 +102,32 @@ print 40 * '-'
 for y in Years:
     print y, '|', str(Posts[Years.index(y)]).rjust(5), '|',\
         str(round(CommentsPerPost[Years.index(y)], 2)).ljust(5), '|',\
-        str(round(NormalizedAverage[Years.index(y)], 3)).ljust(8)
+        str(round(NormalizedComments[Years.index(y)], 3)).ljust(8)
 
+# Colors by http://tools.medialab.sciences-po.fr/iwanthue/, Fancy (light
+# background), 2 colors, soft (k-means)
 if plot:
+    plt.rc('lines', linewidth=3, marker='s')
     plt.figure(figsize=(16, 9))
-    plt.subplot(121)
-    plt.plot(Years, Posts, marker='o')
+    plt.subplot(131)
+    plt.plot(Years, Posts, color='#B8C7D5')
     plt.xlabel('Year')
+    plt.xlim([min(Years), max(Years) - 1])
     plt.title('Posts per year')
-    plt.subplot(122)
+    plt.subplot(132)
     if options.Normalized:
-        plt.plot(Years, NormalizedAverage, marker='o')
+        plt.plot(Years, NormalizedComments, color='#BCD684')
         plt.title('Normalized comments per post')
     else:
-        plt.plot(Years, CommentsPerPost, marker='o')
+        plt.plot(Years, CommentsPerPost, color='#BCD684')
         plt.title('Comments per post')
     plt.xlabel('Year')
+    plt.xlim([min(Years), max(Years) - 1])
+    plt.subplot(133)
+    plt.plot(Years, NormalizedPosts, label='posts', color='#B8C7D5')
+    plt.plot(Years, NormalizedComments, label='comments', color='#BCD684')
+    plt.legend(loc='best')
+    plt.title('Normalized posts\nand comments')
+    plt.xlim([min(Years), max(Years) - 1])
     plt.savefig(str(options.User) + '.png')
     plt.show()
