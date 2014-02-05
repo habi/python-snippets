@@ -108,7 +108,7 @@ for y in Years:
 # background), 2 colors, soft (k-means)
 if plot:
     plt.rc('lines', linewidth=3, marker='s')
-    plt.figure(figsize=(16, 9))
+    plt.figure(figsize=(16, 5))
     plt.subplot(131)
     plt.plot(Years, Posts, color='#B8C7D5')
     plt.xlabel('Year')
