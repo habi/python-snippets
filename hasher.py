@@ -35,4 +35,5 @@ for i in range(HowMany):
             print 'is not there'
             open(os.path.join(os.getcwd(), 'dopplr', currenthash + "_na.txt"),
                  'w').close()
-            sys.stdout.write("\033[F") # Cursor up one line
+            # Cursor up one line: http://stackoverflow.com/a/5291044
+            sys.stdout.write("\033[F")
