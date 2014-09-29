@@ -57,7 +57,11 @@ if not os.path.exists(os.path.join('/',options.MountPoint, options.eAccount)):
     if options.Verbose:
         print 'Making directory', os.path.join(os.path.expanduser('~'),
                                                 options.MountPoint)
-    os.mkdir(os.path.join('/',options.MountPoint, options.eAccount))
+    try:
+        os.makedirs(os.path.join('/',options.MountPoint, options.eAccount))
+    except:
+        print os.path.join('/',options.MountPoint, options.eAccount), \
+            'already exists'
 
 mountcommand = ['sudo','mount','-t','cifs']
 mountcommand += ['//' + options.Beamline + '/' + options.eAccount]
@@ -67,7 +71,7 @@ mountcommand += ['-o','username=' + options.eAccount + ',password=' + options.Pa
 #~ sudo mount -t cifs //X02DA/e14718 ~/mnt -o username=e14718,password=chmielewski
 #~ sudo umount ~/mnt
 
-print mountcommand
+print ' '.join(mountcommand)
 
 subprocess.check_call(mountcommand)
 
