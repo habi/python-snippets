@@ -14,13 +14,14 @@ from mpl_toolkits.mplot3d import Axes3D
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 points = 150
-xs = np.random.randint(0,100,size=points)
-ys = np.random.randint(0,100,size=points)
-zs = np.random.randint(0,100,size=points)
+xs = np.random.randint(0, 100, size=points)
+ys = np.random.randint(0, 100, size=points)
+zs = np.random.randint(0, 100, size=points)
 scatter = ax.scatter(xs, ys, zs)
 
-# Initialization function: Initialize plot, move the camera
+
 def init():
+    # Initialization function: Initialize plot, move the camera
     axis = fig.gca()
     axis.azim = 66
     axis.elev = 15
@@ -29,8 +30,9 @@ def init():
     axis.set_zlim([0, 100])
     return axis,
 
-# Animation function.
+
 def animate(i):
+    # Animation function.
     axis = fig.gca()
     axis.azim = 45 + 40 * np.sin(np.radians(i))
     axis.elev = 30 + 10 * np.sin(np.radians(i))
@@ -40,7 +42,7 @@ def animate(i):
 # Call the animator. blit=True means only re-draw the parts that have changed.
 numframes = 360
 anim = animation.FuncAnimation(fig, animate, init_func=init,
-                               frames = numframes, interval=10, blit=True)
+                               frames=numframes, interval=10, blit=True)
 
 # Save the animation as an mp4.
 #~ anim.save('basic_animation.mp4', fps=24, extra_args=['-vcodec', 'libx264'])
