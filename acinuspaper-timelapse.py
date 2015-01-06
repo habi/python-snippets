@@ -1,6 +1,6 @@
 '''
 Script to check out each and every revision of the Acinus-Paper repository, so
-I can then generate some kind of "timelapse" of the evolution of the paper, 
+I can then generate some kind of "timelapse" of the evolution of the paper,
 something like http://flowingdata.com/2012/11/30/time-lapse-writing/
 '''
 
@@ -40,7 +40,7 @@ for Revision in range(85, MaxRevision + 1):  # go from 1 to MaxRev, not between
     # then quit the whole shenanigans.
     try:
         os.mkdir(SavePath)
-    except:
+    except OSError:
         if not os.path.isdir(SavePath):
             print 'I do not know what is wrong'
             exit()

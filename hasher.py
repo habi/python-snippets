@@ -1,5 +1,6 @@
 """
-generate some random numbers, get a pdf from this random link...
+Script to read some yearly reporst from dopplr.com, the brute force way.
+Now that dopplr.com is gone, this is most probably obsolete...
 """
 
 import os
@@ -13,7 +14,7 @@ currenthash = "7fb16e238d5659a6"
 base_url = "http://reports.dopplr.com/2009/"
 try:
     os.mkdir(os.path.join(os.getcwd(), 'dopplr'))
-except:
+except OSError:
     'Folder "dopplr" already exist, proceeding...'
 HowMany = int(1e6)
 print 'Trying to get', HowMany, 'personal reports from', base_url

@@ -5,41 +5,40 @@ into a mosaic, so we can make a timelapse movie of the paper.
 
 import os
 import subprocess
-import glob
 
 latexmk = True
 montage = True
 
 # Setup
 if os.name == 'posix':
-	DropBoxDir = os.path.join('/Users','habi','Dropbox')
+    DropBoxDir = os.path.join('/Users','habi','Dropbox')
 else:
-	DropBoxDir = os.path.join('c:\\', 'Users', 'haberthu', 'Desktop',
+    DropBoxDir = os.path.join('c:\\', 'Users', 'haberthu', 'Desktop',
     'Dropbox')
 SaveToDirectory = os.path.join(DropBoxDir, 'Work', 'AcinusPaperTimeLapse')
 
 if os.name == 'posix':
-	# Fake revision number if running on the private laptop or at PSI, sice we
-	# then cannot easily connect to the SVN server at ana.unibe.ch...
-	MaxRevision= 94
+    # Fake revision number if running on the private laptop or at PSI, sice we
+    # then cannot easily connect to the SVN server at ana.unibe.ch...
+    MaxRevision= 94
 else:
-	# Get SVN info from remote repository
-	(Output, Error) = subprocess.Popen(('svn', \
-    	                                'info',\
-        	                            'http://code.ana.unibe.ch/svn/' + \
-            	                        'AcinusPaper'),
-                	                    stdout=subprocess.PIPE,
-                    	                shell=True).communicate()
-	# Do some string manipulation to find the highest revision number
-	# The 'Output' above contains 'Revision: $RevisionNumber', thus find the
-	# first occurrence of 'Revision' in Output, and use the two digits that come
-	# after it. If we have more than 99 revisions 'skip=2' will need to be
-	# changed to 'skip=3'. And probably also change the string formatting for
-	# the Directories
-	skip = 2
-	MaxRevision = int(Output[Output.find('Revision') + len('Revision: '):
-    	                     Output.find('Revision') + len('Revision: ') +
-							 skip])
+    # Get SVN info from remote repository
+    (Output, Error) = subprocess.Popen(('svn', \
+                                        'info',\
+                                        'http://code.ana.unibe.ch/svn/' + \
+                                        'AcinusPaper'),
+                                        stdout=subprocess.PIPE,
+                                        shell=True).communicate()
+    # Do some string manipulation to find the highest revision number
+    # The 'Output' above contains 'Revision: $RevisionNumber', thus find the
+    # first occurrence of 'Revision' in Output, and use the two digits that come
+    # after it. If we have more than 99 revisions 'skip=2' will need to be
+    # changed to 'skip=3'. And probably also change the string formatting for
+    # the Directories
+    skip = 2
+    MaxRevision = int(Output[Output.find('Revision') + len('Revision: '):
+                             Output.find('Revision') + len('Revision: ') +
+                             skip])
 
 PageNumber = []
 # Go into each folder and 'latexmk' this thing
@@ -97,12 +96,12 @@ if montage:
 # delete all the unnecessary stuff and move the images to their own directories
 os.chdir(SaveToDirectory)
 if latexmk:
-	# remove all the unnecessary LaTeX-stuff
-	subprocess.call('for i in `ls -d Pap*`; do rm $i/NUL; rm $i/*.b*;rm $i/*.lo*;rm $i/*.aux;rm $i/*.f*;rm $i/*.out;rm $i/*.tdo;rm$i/*.toc;done',shell=True)
+    # remove all the unnecessary LaTeX-stuff
+    subprocess.call('for i in `ls -d Pap*`; do rm $i/NUL; rm $i/*.b*;rm $i/*.lo*;rm $i/*.aux;rm $i/*.f*;rm $i/*.out;rm $i/*.tdo;rm$i/*.toc;done',shell=True)
 if montage:
-	# create directories for timelapse-frames if necessary
-	if not os.path.isdir('frame'):
-		os.mkdir('frame')
-		os.mkdir('mosaic')
-	# move all the frames to their respective directories
-	subprocess.call('for i in `ls -d Pap*`; do mv $i/fr*.png frame;mv $i/mo*.png mosaic;done',shell=True)
+    # create directories for timelapse-frames if necessary
+    if not os.path.isdir('frame'):
+        os.mkdir('frame')
+        os.mkdir('mosaic')
+    # move all the frames to their respective directories
+    subprocess.call('for i in `ls -d Pap*`; do mv $i/fr*.png frame;mv $i/mo*.png mosaic;done',shell=True)
