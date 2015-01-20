@@ -16,4 +16,4 @@
 - run the script with the appropiate options
 - you should get an image like the one shown below, which are the numbers for [my blog](http://habi.gna.ch) (if you have [matplotlib](http://matplotlib.org) installed, otherwise you only get the raw numbers).
 
-![comments for habi.gna.ch](https://raw2.github.com/habi/python/master/comments-visualization/habi_gna_ch.png)
+![comments for habi.gna.ch](https://raw.githubusercontent.com/habi/python/master/comments-visualization/habi_gna_ch.png)

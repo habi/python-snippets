@@ -1,6 +1,9 @@
-'''
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
 Plotting comment number from a WordPress MySQL database
-'''
+"""
 
 from __future__ import division
 import optparse
@@ -59,9 +62,9 @@ if not (options.Server and options.Database and options.User and
     print
     print 'Example:'
     print 'The command gets the comments'
-    print '   * out of the database "awesomebase" on server "example.com"'
-    print '   * for user "' + name + '"'
-    print '   * with the password "' + password + '"'
+    print '\t* out of the database "awesomebase" on server "example.com"'
+    print '\t* for user "' + name + '"'
+    print '\t* with the password "' + password + '"'
     print 'and plots them with the real numbers (if matplotlib is available',\
         'otherwise it just gives out the numbers.'
     print
@@ -108,11 +111,11 @@ for y in Years:
 # background), 2 colors, soft (k-means)
 if plot:
     plt.rc('lines', linewidth=3, marker='s')
-    plt.figure(figsize=(16, 5))
+    plt.figure(figsize=[16, 5])
     plt.subplot(131)
     plt.plot(Years, Posts, color='#B8C7D5')
     plt.xlabel('Year')
-    plt.xlim([min(Years), max(Years) - 1])
+    plt.xlim([min(Years), max(Years)])
     plt.title('Posts per year')
     plt.subplot(132)
     if options.Normalized:
@@ -122,12 +125,12 @@ if plot:
         plt.plot(Years, CommentsPerPost, color='#BCD684')
         plt.title('Comments per post')
     plt.xlabel('Year')
-    plt.xlim([min(Years), max(Years) - 1])
+    plt.xlim([min(Years), max(Years)])
     plt.subplot(133)
     plt.plot(Years, NormalizedPosts, label='posts', color='#B8C7D5')
     plt.plot(Years, NormalizedComments, label='comments', color='#BCD684')
     plt.legend(loc='best')
     plt.title('Normalized posts\nand comments')
-    plt.xlim([min(Years), max(Years) - 1])
-    plt.savefig(str(options.User) + '.png')
+    plt.xlim([min(Years), max(Years)])
+    plt.savefig(str(options.User) + '.png', bbox_inches='tight')
     plt.show()
