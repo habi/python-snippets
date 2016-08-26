@@ -39,11 +39,11 @@ PDFs.
 
 if options.InputFile is None:
     parser.print_help()
-    print 'Example:'
-    print 'The command below Print example'
-    print ''
-    print sys.argv[0], '-i SomeDir/SomeFile.pdf'
-    print ''
+    print('Example:')
+    print('The command below Print example')
+    print()
+    print(sys.argv[0], '-i SomeDir/SomeFile.pdf')
+    print()
     sys.exit(1)
 
 if options.OutputFile:
@@ -55,19 +55,19 @@ else:
 
 print
 if options.Quality in ('screen', 'ebook', 'printer', 'prepress'):
-    print 'Converting'
-    print options.InputFile
-    print 'to the', options.Quality + '-quality PDF'
-    print OutputName
+    print('Converting')
+    print(options.InputFile)
+    print('to the', options.Quality + '-quality PDF')
+    print(OutputName)
 else:
-    print 'You probably have a ypot in the quality settings. :)'
-    print 'You can only enter one of these:'
-    print '    -q screen (default)'
-    print '    -q ebook'
-    print '    -q printer'
-    print '    -q prepress'
-    print
-    print 'Please try again!'
+    print('You probably have a ypot in the quality settings. :)')
+    print('You can only enter one of these:')
+    print('\t-q screen (default)')
+    print('\t-q ebook')
+    print('\t-q printer')
+    print('\t-q prepress')
+    print()
+    print('Please try again!')
     sys.exit(1)
 
 reducecommand = 'gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite ' + \
@@ -76,4 +76,4 @@ reducecommand = 'gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite ' + \
     options.InputFile.replace(' ', '\ ') + '> /dev/null'
 
 os.system(reducecommand)
-print 'done'
+print('done')
